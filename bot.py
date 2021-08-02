@@ -6,10 +6,7 @@ import discord
 from discord.ext import commands
 from dotenv import dotenv_values
 
-from discord_slash import SlashCommand
-
-config: Dict[str, str] = dotenv_values('.env')
-
+# from discord_slash import SlashCommand
 
 class ZombieBot(commands.Bot):
     last_message: str
