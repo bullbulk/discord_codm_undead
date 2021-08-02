@@ -7,4 +7,4 @@ from bot import ZombieBot
 load_dotenv()
 
 bot = ZombieBot('z!')
-bot.run(token=os.getenv('DISCORD_BOT_TOKEN'))
+bot.run(os.getenv('DISCORD_BOT_TOKEN'))

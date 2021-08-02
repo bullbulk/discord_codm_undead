@@ -1,3 +1,4 @@
+import os
 import traceback
 from datetime import datetime
 from typing import Dict
@@ -19,7 +20,7 @@ class ZombieBot(commands.Bot):
         # self.slash = SlashCommand(self, sync_commands=True, sync_on_cog_reload=True)
 
     async def on_ready(self):
-        self.owner = await self.fetch_user(self.owner_id)
+        self.owner = await self.fetch_user(int(os.getenv('DISCORD_OWNER_ID')))
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
