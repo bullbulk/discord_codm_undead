@@ -15,6 +15,11 @@ class ZombieBot(commands.Bot):
     last_message: str
     owner: discord.User
 
+    ignoring_exceptions = [
+        commands.CommandNotFound,
+        commands.CheckFailure
+    ]
+
     def __init__(self, command_prefix, **options):
         intents = discord.Intents.all()
         super().__init__(command_prefix, intents=intents, **options)
@@ -33,7 +38,7 @@ class ZombieBot(commands.Bot):
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, exception):
-        if type(exception) == commands.CommandNotFound:
+        if type(exception) in self.ignoring_exceptions:
             return
         tb = \
             f'{"-" * 15}{datetime.now()}{"-" * 15}\n' \
