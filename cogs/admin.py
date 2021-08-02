@@ -16,6 +16,7 @@ class Admin(commands.Cog):
 
     @cogs.command()
     async def load(self, ctx, cog=None):
+        cog = f'cogs.{cog}'
         try:
             if cog:
                 extensions.load_ext(self.bot, name=cog)
@@ -30,6 +31,7 @@ class Admin(commands.Cog):
 
     @cogs.command()
     async def reload(self, ctx, cog=None):
+        cog = f'cogs.{cog}'
         try:
             if cog:
                 extensions.reload_ext(self.bot, name=cog)
@@ -46,6 +48,7 @@ class Admin(commands.Cog):
 
     @cogs.command()
     async def unload(self, ctx, cog=None):
+        cog = f'cogs.{cog}'
         try:
             if cog:
                 extensions.unload_ext(self.bot, name=cog)
@@ -55,3 +58,7 @@ class Admin(commands.Cog):
             await ctx.send('Extension not found')
         except commands.ExtensionNotLoaded:
             await ctx.send('Extension has not been loaded')
+
+
+def setup(bot):
+    bot.add_cog(Admin(bot))

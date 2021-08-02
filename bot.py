@@ -8,6 +8,8 @@ from discord.ext import commands
 from dotenv import dotenv_values
 
 # from discord_slash import SlashCommand
+from utils import extensions
+
 
 class ZombieBot(commands.Bot):
     last_message: str
@@ -17,10 +19,12 @@ class ZombieBot(commands.Bot):
         intents = discord.Intents.all()
         super().__init__(command_prefix, intents=intents, **options)
 
+        self.owner_id = int(os.getenv('DISCORD_OWNER_ID'))
         # self.slash = SlashCommand(self, sync_commands=True, sync_on_cog_reload=True)
 
     async def on_ready(self):
-        self.owner = await self.fetch_user(int(os.getenv('DISCORD_OWNER_ID')))
+        self.owner = await self.fetch_user(self.owner_id)
+        extensions.load_all_ext(self)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
@@ -29,6 +33,8 @@ class ZombieBot(commands.Bot):
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, exception):
+        if type(exception) == commands.CommandNotFound:
+            return
         tb = \
             f'{"-" * 15}{datetime.now()}{"-" * 15}\n' \
             f'Command: {self.last_message}\n' \
