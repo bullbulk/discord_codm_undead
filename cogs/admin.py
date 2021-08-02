@@ -22,6 +22,7 @@ class Admin(commands.Cog):
                 extensions.load_ext(self.bot, name=cog)
             else:
                 extensions.load_all_ext(self.bot)
+            await ctx.send('Success')
         except commands.ExtensionNotFound:
             await ctx.send('Extension not found')
         except commands.ExtensionFailed:
@@ -37,6 +38,7 @@ class Admin(commands.Cog):
                 extensions.reload_ext(self.bot, name=cog)
             else:
                 extensions.reload_all_ext(self.bot)
+            await ctx.send('Success')
         except commands.ExtensionNotFound:
             await ctx.send('Extension not found')
         except commands.ExtensionNotLoaded:
@@ -54,6 +56,7 @@ class Admin(commands.Cog):
                 extensions.unload_ext(self.bot, name=cog)
             else:
                 extensions.unload_all_ext(self.bot)
+            await ctx.send('Success')
         except commands.ExtensionNotFound:
             await ctx.send('Extension not found')
         except commands.ExtensionNotLoaded:
