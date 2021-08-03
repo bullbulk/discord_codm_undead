@@ -1,8 +1,10 @@
 from discord.ext import commands
 
+from stubs import ZombieBotStub
+
 
 class Lobby(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: ZombieBotStub):
         self.bot = bot
 
     @commands.group()
@@ -20,6 +22,7 @@ class Lobby(commands.Cog):
     @lobby.command()
     async def join(self, ctx):
         pass
+
 
 def setup(bot):
     bot.add_cog(Lobby(bot))

@@ -4,6 +4,7 @@ from typing import List
 import discord
 from discord.ext import commands
 
+from stubs import ZombieBotStub
 from utils import profiles
 
 
@@ -21,8 +22,9 @@ class Profile(commands.Cog):
     }
     edit_emoji = '📝'
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: ZombieBotStub):
         self.bot = bot
+        self.text_data = bot.text_data['profile']
 
     async def modify_embed_for_editing(self, embed: discord.Embed):
         fields = embed.fields
@@ -83,17 +85,15 @@ class Profile(commands.Cog):
 
     @profile.command()
     async def create(self, ctx: commands.Context, uid: int = None, talent_lvl: int = None):
+        f_text_data = self.text_data['create']
         if profiles.profile_exists(ctx.author.id):
-            return await ctx.send('Вы уже зарегистрированы в системе')
+            return await ctx.send(f_text_data['profile_already_exists'])
         if not uid or not talent_lvl:
-            return await ctx.send(
-                'Передайте свой UID и уровень талантов в виде __**z!profile create <UID> <уровень>**__')
+            return await ctx.send(f_text_data['no_parameters_provided'])
         if 50 < talent_lvl < 0:
-            return await ctx.send('Введите корректный уровень талантов')
+            return await ctx.send(f_text_data['incorrect_talent_lvl'])
         if len(ctx.message.attachments) != 2:
-            return await ctx.send('Прикрепите к сообщению скриншоты:\n\n'
-                                  'Вашего игрового профиля с рассматриваемым UID\n'
-                                  'Экрана талантов')
+            return await ctx.send(f_text_data['screenshot_info'])
 
 
 def setup(bot):

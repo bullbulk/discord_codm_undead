@@ -1,25 +1,25 @@
 from discord.ext import commands
 
+from stubs import ZombieBotStub
 from utils import extensions
 
 
 class Admin(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: ZombieBotStub):
         self.bot = bot
 
     async def cog_check(self, ctx):
         return ctx.author.id == self.bot.owner_id
 
     @commands.group()
-    async def cogs(self, ctx):
+    async def ext(self, ctx):
         pass
 
-    @cogs.command()
-    async def load(self, ctx, cog=None):
-        cog = f'cogs.{cog}'
+    @ext.command()
+    async def load(self, ctx, extension=None):
         try:
-            if cog:
-                extensions.load_ext(self.bot, name=cog)
+            if extension:
+                extensions.load_ext(self.bot, name=extension)
             else:
                 extensions.load_all_ext(self.bot)
             await ctx.send('Success')
@@ -30,12 +30,11 @@ class Admin(commands.Cog):
         except commands.ExtensionError:
             await ctx.send('Extension error')
 
-    @cogs.command()
-    async def reload(self, ctx, cog=None):
-        cog = f'cogs.{cog}'
+    @ext.command()
+    async def reload(self, ctx, extension=None):
         try:
-            if cog:
-                extensions.reload_ext(self.bot, name=cog)
+            if extension:
+                extensions.reload_ext(self.bot, name=extension)
             else:
                 extensions.reload_all_ext(self.bot)
             await ctx.send('Success')
@@ -48,12 +47,11 @@ class Admin(commands.Cog):
         except commands.ExtensionError:
             await ctx.send('Extension error')
 
-    @cogs.command()
-    async def unload(self, ctx, cog=None):
-        cog = f'cogs.{cog}'
+    @ext.command()
+    async def unload(self, ctx, extension=None):
         try:
-            if cog:
-                extensions.unload_ext(self.bot, name=cog)
+            if extension:
+                extensions.unload_ext(self.bot, name=extension)
             else:
                 extensions.unload_all_ext(self.bot)
             await ctx.send('Success')
