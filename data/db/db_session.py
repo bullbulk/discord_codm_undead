@@ -1,41 +1,24 @@
 import asyncio
 
-from aiopg.sa import create_engine, SAConnection
-from sqlalchemy.sql.ddl import CreateTable
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-__factory = None
-
-
-async def execute_if_table_exists(conn, table_name, query):
-    q = f"""SELECT *
-            FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_NAME = '{table_name}'"""
-    res = await conn.execute(q)
-
-    if not await res.first():
-        await conn.execute(query)
-
-
-async def create_tables():
-    from .__all_models import models
-
-    conn = get_session()
-
-    for model in models:
-        await execute_if_table_exists(conn, model, CreateTable(model))
+SqlAlchemyBase = declarative_base()
+__factory: AsyncSession = None
 
 
 async def init_db(name, username, password, host):
     global __factory
 
-    engine = await create_engine(host=host,
-                                 database=name,
-                                 user=username,
-                                 password=password,
-                                )
-    __factory = await engine.acquire()
+    engine = create_async_engine(
+        f"postgresql+asyncpg://{username}:{password}@{host}/{name}",
+    )
+    __factory = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)()
 
-    await create_tables()
+    from . import __all_models
+
+    async with engine.begin() as conn:
+        await conn.run_sync(SqlAlchemyBase.metadata.create_all)
 
 
 def global_init(dbname, username, password, db_host):
@@ -45,14 +28,11 @@ def global_init(dbname, username, password, db_host):
     asyncio.get_event_loop().run_until_complete(init_db(dbname, username, password, db_host))
 
 
-def get_session() -> SAConnection:
+def get_session() -> AsyncSession:
     global __factory
     return __factory
 
 
-__factory: SAConnection
-
-
-async def close_session():
+def close_session():
     global __factory
-    await __factory.close()
+    asyncio.run(__factory.close())

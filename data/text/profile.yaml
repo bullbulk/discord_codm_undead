@@ -1,3 +1,6 @@
+profile:
+  to_create: Чтобы зарегистрироваться, введите z!profile create
+
 create:
   profile_already_exists: Вы уже зарегистрированы в системе
   incorrect_talent_lvl: Введите корректный уровень талантов

@@ -1,21 +1,22 @@
 import datetime
 
-import sqlalchemy as sa
-from sqlalchemy import Table
+from sqlalchemy import BigInteger, String, Integer, Text, DateTime
 from sqlalchemy import Column
 
-Profile = Table(
-    'profiles', sa.MetaData(),
-    Column('discord_id', sa.BigInteger, unique=True),
-    Column('nickname', sa.String),
+from data.db.db_session import SqlAlchemyBase
+from data.db.models.mixin import DeclarativeBaseMixin
 
-    Column('uid', sa.BigInteger, unique=True),
-    Column('talents_lvl', sa.Integer),
-    Column('profile_description', sa.Text),
-    Column('matches_count', sa.Integer),
-    Column('wins_count', sa.Integer),
-    Column('likes', sa.Integer),
-    Column('dislikes', sa.Integer),
-    Column('register_date', sa.DateTime, default=datetime.datetime.now),
 
-)
+class Profile(SqlAlchemyBase, DeclarativeBaseMixin):
+    __tablename__ = 'profiles'
+
+    id = Column(BigInteger, primary_key=True)
+    nickname = Column(String)
+    uid = Column(BigInteger, unique=True)
+    talents_lvl = Column(Integer)
+    profile_description = Column(Text)
+    matches_count = Column(Integer)
+    wins_count = Column(Integer)
+    likes = Column(Integer)
+    dislikes = Column(Integer)
+    register_date = Column(DateTime, default=datetime.datetime.now)

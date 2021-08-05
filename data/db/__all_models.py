@@ -1,6 +1,1 @@
-from .models import profile
-
-models = [
-    profile.Profile,
-
-]
+from .models.profile import Profile

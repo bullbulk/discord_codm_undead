@@ -67,8 +67,12 @@ class Profile(commands.Cog):
     async def profile(self, ctx: commands.Context):
         if ctx.invoked_subcommand:
             return
+        f_text_data = self.text_data['profile']
 
-        embed = profiles.user_profile_embed(ctx.author.id)
+        embed = await profiles.get_user_profile_embed(ctx.author.id)
+        if not embed:
+            return await ctx.send(f_text_data['to_create'])
+
         message = await ctx.send(embed=embed)
 
         await message.add_reaction(self.edit_emoji)
@@ -93,7 +97,6 @@ class Profile(commands.Cog):
             return await ctx.send(f_text_data['no_parameters_provided'])
         if talents_lvl < 0 or talents_lvl > 50:
             return await ctx.send(f_text_data['incorrect_talent_lvl'])
-        print(1)
         await profiles.create_profile(ctx.author.id, nickname, uid, talents_lvl)
 
     @profile.command()
