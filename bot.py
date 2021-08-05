@@ -1,13 +1,13 @@
 import os
 import traceback
 from datetime import datetime
-from typing import Dict
 
 import discord
 from discord.ext import commands
-from dotenv import dotenv_values
 
 # from discord_slash import SlashCommand
+from data.db.db_session import get_session
+from data.db.models.profile import Profile
 from utils import extensions
 
 
@@ -44,6 +44,7 @@ class ZombieBot(commands.Bot):
             f'{"-" * 15}{datetime.now()}{"-" * 15}\n' \
             f'Command: {self.last_message}\n' \
             f'{"".join(traceback.format_exception(type(exception), exception, exception.__traceback__))}'
+        print(tb)
 
         await self.owner.send(tb)
 

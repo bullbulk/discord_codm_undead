@@ -1,9 +1,13 @@
 create:
   profile_already_exists: Вы уже зарегистрированы в системе
   incorrect_talent_lvl: Введите корректный уровень талантов
-  no_parameters_provided: Передайте свой UID и уровень талантов в виде __**z!profile create <UID> <уровень>**__
+  no_parameters_provided: Передайте свой UID и уровень талантов в виде __**z!profile create <nickname> <UID> <уровень талантов>**__
+  success: Вы успешно зарегистрировались
+
+verify:
   screenshot_info: |
     Прикрепите к сообщению скриншоты:
 
     Вашего игрового профиля с рассматриваемым UID
     Экрана талантов
+  success: Вы успешно подтвердили свой аккаунт

@@ -59,7 +59,7 @@ class Profile(commands.Cog):
 
         try:
             reaction = await self.bot.wait_for('reaction_add', check=check, timeout=10)
-            await ctx.send(str(reaction))
+            # todo: edit profile
         except asyncio.TimeoutError:
             await embed_message.clear_reactions()
 
@@ -84,14 +84,22 @@ class Profile(commands.Cog):
             await self.proceed_profile_edit(ctx, message)
 
     @profile.command()
-    async def create(self, ctx: commands.Context, uid: int = None, talent_lvl: int = None):
+    async def create(self, ctx: commands.Context, nickname=None, uid: int = None, talents_lvl: int = None):
         f_text_data = self.text_data['create']
-        if profiles.profile_exists(ctx.author.id):
+
+        if await profiles.profile_exists(ctx.author.id):
             return await ctx.send(f_text_data['profile_already_exists'])
-        if not uid or not talent_lvl:
+        if not all([uid, talents_lvl, nickname]):
             return await ctx.send(f_text_data['no_parameters_provided'])
-        if 50 < talent_lvl < 0:
+        if talents_lvl < 0 or talents_lvl > 50:
             return await ctx.send(f_text_data['incorrect_talent_lvl'])
+        print(1)
+        await profiles.create_profile(ctx.author.id, nickname, uid, talents_lvl)
+
+    @profile.command()
+    async def verify(self, ctx: commands.Context):
+        f_text_data = self.text_data['verify']
+
         if len(ctx.message.attachments) != 2:
             return await ctx.send(f_text_data['screenshot_info'])
 
