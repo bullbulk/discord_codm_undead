@@ -8,19 +8,17 @@ from sqlalchemy.pool import NullPool
 SqlAlchemyBase = declarative_base()
 __factory: AsyncSession = None
 __engine = None
-__db_loop: asyncio.BaseEventLoop = None
 
 
 async def init_db(name, username, password, host):
-    global __factory, __engine, __db_loop
+    global __factory, __engine
 
     # if poolclass=NullPool is not provided, running AsyncEngine.dispose() in other loop will raise RuntimeError
-    # discord.Bot.run() in the end closes the running loop, which AsyncEngine uses
+    # discord.Bot.run() in the end closes the running loop, which AsyncEngine uses, and we can't open it
     __engine = create_async_engine(
         f"postgresql+asyncpg://{username}:{password}@{host}/{name}", poolclass=NullPool
     )
     __factory = sessionmaker(__engine, expire_on_commit=False, class_=AsyncSession)()
-    __db_loop = asyncio.get_event_loop()
 
     from . import __all_models
 
@@ -41,5 +39,5 @@ def get_session() -> AsyncSession:
 
 
 def close_session():
-    global __engine, __db_loop
+    global __engine
     asyncio.run(__engine.dispose())
