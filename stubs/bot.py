@@ -9,3 +9,4 @@ class ZombieBotStub(commands.Bot):
     last_message: str
     owner: discord.User
     ignoring_exceptions: List[Exception]
+    errors_text: Dict[str, str]

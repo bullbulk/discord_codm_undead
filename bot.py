@@ -1,24 +1,20 @@
 import os
 import traceback
 from datetime import datetime
+from typing import Dict
 
 import discord
 from discord.ext import commands
 
 # from discord_slash import SlashCommand
-from data.db.db_session import get_session
-from data.db.models.profile import Profile
 from utils import extensions
 
 
 class ZombieBot(commands.Bot):
     last_message: str
     owner: discord.User
-
-    ignoring_exceptions = [
-        commands.CommandNotFound,
-        commands.CheckFailure
-    ]
+    text_data: Dict[str, Dict[str, Dict[str, str]]]
+    errors_text: Dict[str, str]
 
     def __init__(self, command_prefix, **options):
         intents = discord.Intents.all()
@@ -27,9 +23,16 @@ class ZombieBot(commands.Bot):
         self.owner_id = int(os.getenv('DISCORD_OWNER_ID'))
         # self.slash = SlashCommand(self, sync_commands=True, sync_on_cog_reload=True)
 
+        extensions.load_all_ext(self)
+
+        self.processed_exceptions = {
+            commands.CommandNotFound: None,
+            commands.CheckFailure: None,
+            commands.CommandInvokeError: self.errors_text['undefined_error'],
+        }
+
     async def on_ready(self):
         self.owner = await self.fetch_user(self.owner_id)
-        extensions.load_all_ext(self)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
@@ -38,13 +41,14 @@ class ZombieBot(commands.Bot):
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, exception):
-        if type(exception) in self.ignoring_exceptions:
-            return
+        message = self.processed_exceptions.get(type(exception))
+        if message:
+            return await ctx.send(message)
+
         tb = \
             f'{"-" * 15}{datetime.now()}{"-" * 15}\n' \
             f'Command: {self.last_message}\n' \
             f'{"".join(traceback.format_exception(type(exception), exception, exception.__traceback__))}'
-        print(tb)
 
         await self.owner.send(tb)
 

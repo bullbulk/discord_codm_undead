@@ -14,3 +14,4 @@ def setup(bot: ZombieBotStub):
         with open(f'{base_path}{i}') as f:
             data[i.split('.')[0]] = yaml.safe_load(f)
     bot.text_data = data
+    bot.errors_text = data['errors']

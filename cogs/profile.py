@@ -97,7 +97,13 @@ class Profile(commands.Cog):
             return await ctx.send(f_text_data['no_parameters_provided'])
         if talents_lvl < 0 or talents_lvl > 50:
             return await ctx.send(f_text_data['incorrect_talent_lvl'])
-        await profiles.create_profile(ctx.author.id, nickname, uid, talents_lvl)
+
+        profile = await profiles.create_profile(ctx.author.id, nickname, uid, talents_lvl)
+
+        if profile:
+            return await ctx.send(f_text_data['success'])
+        else:
+            return await ctx.send(self.bot.errors_text['undefined_error'])
 
     @profile.command()
     async def verify(self, ctx: commands.Context):
