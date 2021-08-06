@@ -6,8 +6,10 @@ from typing import Dict
 import discord
 from discord.ext import commands
 
-# from discord_slash import SlashCommand
+# TODO: from discord_slash import SlashCommand
 from utils import extensions
+
+EXCEPTION_IGNORED = 1
 
 
 class ZombieBot(commands.Bot):
@@ -26,8 +28,8 @@ class ZombieBot(commands.Bot):
         extensions.load_all_ext(self)
 
         self.processed_exceptions = {
-            commands.CommandNotFound: None,
-            commands.CheckFailure: None,
+            commands.CommandNotFound: EXCEPTION_IGNORED,
+            commands.CheckFailure: EXCEPTION_IGNORED,
             commands.CommandInvokeError: self.errors_text['undefined_error'],
         }
 
@@ -42,11 +44,13 @@ class ZombieBot(commands.Bot):
 
     async def on_command_error(self, ctx, exception):
         message = self.processed_exceptions.get(type(exception))
+        if message == EXCEPTION_IGNORED:
+            return
         if message:
             return await ctx.send(message)
 
         tb = \
-            f'{"-" * 15}{datetime.now()}{"-" * 15}\n' \
+            f'{str(datetime.now()).center(15, "-")}\n' \
             f'Command: {self.last_message}\n' \
             f'{"".join(traceback.format_exception(type(exception), exception, exception.__traceback__))}'
 
@@ -54,7 +58,7 @@ class ZombieBot(commands.Bot):
 
     async def on_error(self, *args, **kwargs):
         tb = \
-            f'{"-" * 15}{datetime.now()}{"-" * 15}\n' \
+            f'{str(datetime.now()).center(15, "-")}\n' \
             f'{traceback.format_exc()}'
 
         await self.owner.send(tb)
